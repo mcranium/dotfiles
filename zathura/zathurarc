@@ -1,0 +1,25 @@
+# enable copying text to the clipboard
+set selection-clipboard clipboard
+
+# show a statusbar (s) and a scrollbar (h)
+set guioptions sh
+
+set smooth-scroll true
+
+# shorten the file paths
+set window-title-home-tilde true
+set window-title-home-tilde true
+
+# Font for the info line at the bottom
+set font "ubuntu mono normal 11"
+
+# open document in fit-width mode by default
+set adjust-open width
+
+# increase the space between the pages a little
+set page-padding 2
+
+# set the background color
+set default-bg \#262626
+set inputbar-bg \#262626
+set statusbar-bg \#262626
