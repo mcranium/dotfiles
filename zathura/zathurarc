@@ -2,7 +2,7 @@
 set selection-clipboard clipboard
 
 # show a statusbar (s) and a scrollbar (h)
-set guioptions sh
+set guioptions sv
 
 set smooth-scroll true
 
