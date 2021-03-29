@@ -3,12 +3,12 @@
 # This config is developed from the default Arcolinux D config
 # with inspiration from Derek Taylor's config at
 # https://gitlab.com/dwt1/dotfiles/blob/master/.config/qtile/config.py
-# and multi monitor recognition from https://sean.fish/d/.config/qtile/util.py?dark
 
 import os
 import re
 import socket
 import subprocess
+from libqtile import qtile
 from libqtile.config import Drag, Key, Screen, Group, Click, Rule
 from libqtile.command import lazy
 from libqtile import layout, bar, widget, hook
@@ -35,11 +35,11 @@ def window_to_next_group(qtile):
         i = qtile.groups.index(qtile.currentGroup)
         qtile.currentWindow.togroup(qtile.groups[i + 1].name)
 
-myTerm = 'alacritty' 
+myTerm = 'alacritty'
 myFM = 'thunar'
 
 keys = [
-    
+
 # To do: arrange the keybindings in a more useful way
 
 # SUPER + FUNCTION KEYS
@@ -67,6 +67,7 @@ keys = [
     # To do: the dmenu colours and font sizes should be adjusted
     Key([mod, "shift"], "d", lazy.spawn("dmenu_run -i -nb '#191919' -nf '#fea63c' -sb '#fea63c' -sf '#191919' -fn 'NotoMonoRegular:pixelsize=20'")),
     Key([mod, "shift"], "c", lazy.spawn(myTerm+' -e nvim /home/mario/.config/qtile/config.py')),
+    Key([mod, "shift"], "n", lazy.spawn(myTerm+' -e nvim /home/mario/.config/nvim/init.vim')),
 
 # HTOP
     Key([], "XF86Tools", lazy.spawn(myTerm+' -e htop')),
@@ -174,29 +175,39 @@ for i in groups:
     keys.extend([
         Key([mod], i.name, lazy.group[i.name].toscreen()), # go to another workspace
         Key([mod, "shift"], # move a window to another workspace
-            i.name, 
-            lazy.window.togroup(i.name) , 
+            i.name,
+            lazy.window.togroup(i.name) ,
             lazy.group[i.name].toscreen()), # move with the window to the other workspace
     ])
 
 def init_layout_theme():
-    return {"margin":5,
+    return {"margin":0,
             "border_width":2,
-            "border_focus": "#5e81ac",
+            "border_focus": "#5E9726",
             "border_normal": "#4c566a"
             }
 
 layout_theme = init_layout_theme()
 
 layouts = [
-    layout.Columns(fair=False,
+    layout.Columns(
+        fair=False,
+        insert_position=1,
         margin=0,
-        num_stacks=2,
+        num_columns=2,
         border_width=2,
         border_focus="#5E9726",
         border_normal="#4c566a",
         border_on_single=False,
         border_focus_stack="881111"),
+    # layout.MonadTall(
+        # margin=0,
+        # border_width=2,
+        # border_focus="#5E9726",
+        # border_normal="#4c566a",
+        # single_border_width=0,
+        # ratio=0.6,
+        # name='tall'),
     layout.Max(**layout_theme)
 ]
 
@@ -221,11 +232,11 @@ colors = init_colors()
 
 # WIDGETS FOR THE BAR
 
-def open_htop():
-    qtile.cmd.spawn('alacritty -e htop')
+# def open_htop():
+    # qtile.cmd.spawn('alacritty -e htop')
 
-def open_cal():
-    qtile.cmd.spawn('alacritty --hold -e cal')
+# def open_cal():
+    # qtile.cmd.spawn('alacritty --hold -e cal')
 
 
 def init_widgets_defaults():
@@ -308,17 +319,16 @@ def init_widgets_list():
                         foreground=colors[4],
                         background=colors[1],
                         padding = 0,
-                        # to do: mouse callback is not working
-                        mouse_callbacks = {'Button1': open_htop},
+                        mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(myTerm + ' -t htop -e htop')},
                         fontsize=16
                         ),
                widget.Memory(
                         font="Noto Sans",
                         format = '{MemUsed}M/{MemTotal}M',
+                        mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(myTerm + ' -t htop -e htop')},
                         update_interval = 1,
                         fontsize = 12,
                         foreground = colors[5],
-                        mouse_callbacks = {'Button1': open_htop},
                         background = colors[1]
                        ),
                widget.Sep(
@@ -333,23 +343,23 @@ def init_widgets_list():
                         foreground=colors[3],
                         background=colors[1],
                         padding = 0,
-                        mouse_callbacks = {'Button1': open_cal},
+                        mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(myTerm + ' --hold -t cal -e cal -3')},
                         fontsize=16
                         ),
                widget.Clock(
                         font="Noto Sans",
                         foreground = colors[5],
                         background = colors[1],
-                        fontsize = 12,
-                        mouse_callbacks = {'Button1': open_cal},
-                        format="%Y %m %d "
+                        fontsize = 14,
+                        mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(myTerm + ' --hold -t cal -e cal -3')},
+                        format="%a %d.%m.%Y "
                         ),
                widget.Clock(
                         font="Noto Sans Bold", 
                         foreground = colors[5],
                         background = colors[1],
-                        fontsize = 12,
-                        mouse_callbacks = {'Button1': open_cal},
+                        fontsize = 14,
+                        mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(myTerm + ' --hold -t cal -e cal -3')},
                         format="%H:%M"
                         ),
                widget.Sep(
@@ -362,7 +372,7 @@ def init_widgets_list():
                         background=colors[1],
                         icon_size=20,
                         padding = 4
-                        ), 
+                        ),
                widget.Sep(
                         linewidth = 1,
                         padding = 10,
