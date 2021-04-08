@@ -23,3 +23,8 @@ set page-padding 2
 set default-bg \#262626
 set inputbar-bg \#262626
 set statusbar-bg \#262626
+
+# mousewheel zoom
+map <C-Button4> zoom in
+map <C-Button5> zoom out
+
